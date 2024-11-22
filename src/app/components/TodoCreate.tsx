@@ -3,7 +3,8 @@
 import {FormEvent, useEffect, useState, useCallback, ChangeEvent} from "react";
 import {Box, FormControl, IconButton, Input, Stack} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import {useTodo} from "@/contexts/TodoContext";
+import EditIcon from "@mui/icons-material/Edit";
+import {useTodo} from "@/app/contexts/TodoContext";
 
 export const TodoCreate = () => {
   const [todoText, setTodoText] = useState("");
@@ -18,12 +19,12 @@ export const TodoCreate = () => {
     }
   }, [currentTodo]);
 
-  // Handler to manage input changes
+
   const handleInputChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setTodoText(e.target.value);
   }, []);
 
-  // Form submission handler
+
   const handleSubmit = useCallback(
     (e: FormEvent) => {
       e.preventDefault();
@@ -68,7 +69,11 @@ export const TodoCreate = () => {
             aria-label={currentTodo ? "Edit Todo" : "Add Todo"}
             disabled={!todoText.trim()}
           >
-            <AddIcon/>
+            {
+              currentTodo
+                ? <EditIcon fontSize="small"/>
+                : <AddIcon/>
+            }
           </IconButton>
         </FormControl>
       </Stack>
