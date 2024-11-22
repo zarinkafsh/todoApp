@@ -1,4 +1,3 @@
-import {useCallback} from "react";
 import {
   IconButton,
   List,
@@ -17,31 +16,12 @@ import {useTodo} from "@/contexts/TodoContext";
 import {TodoType} from "@/common/todo";
 
 export const TodoList = () => {
-  const {todos, toggleTodo, removeTodo, setCurrentTodo, loading} = useTodo();
+  const {todos, toggleTodo, removeTodo, loading, setCurrentTodo} = useTodo();
 
-  // Use memoized callbacks for event handlers
-  const handleToggle = useCallback(
-    (id: number) => {
-      toggleTodo(id);
-    },
-    [toggleTodo]
-  );
+  if (loading) return <CircularProgress size={30} className="flex justify-center items-center"/>;
 
-  const handleEdit = useCallback(
-    (todo: TodoType) => {
-      setCurrentTodo(todo);
-    },
-    [setCurrentTodo]
-  );
+  if (todos.length === 0) return <Typography className="flex justify-center items-center">No todos found!</Typography>;
 
-  const handleRemove = useCallback(
-    (id: number) => {
-      removeTodo(id);
-    },
-    [removeTodo]
-  );
-
-  if (loading) return <CircularProgress size={30} className="flex justify-center items-center"/>
   return (
     <List>
       {(todos || []).map((todo: TodoType) => (
@@ -55,7 +35,7 @@ export const TodoList = () => {
                 edge="start"
                 title="Edit"
                 aria-label="edit"
-                onClick={() => handleEdit(todo)}
+                onClick={() => setCurrentTodo(todo)}
                 disabled={todo.completed}
               >
                 <EditIcon fontSize="small"/>
@@ -65,7 +45,7 @@ export const TodoList = () => {
                 edge="end"
                 title="Delete"
                 aria-label="delete"
-                onClick={() => handleRemove(todo.id)}
+                onClick={() => removeTodo(todo.id)}
               >
                 <ClearIcon fontSize="small"/>
               </IconButton>
@@ -75,7 +55,7 @@ export const TodoList = () => {
           <ListItemButton
             disableTouchRipple
             disableRipple
-            onClick={() => handleToggle(todo.id)}
+            onClick={() => toggleTodo(todo.id)}
           >
             <ListItemIcon>
               <Checkbox
