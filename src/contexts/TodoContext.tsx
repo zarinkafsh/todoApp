@@ -17,6 +17,7 @@ export const useTodo = () => {
 export const TodoProvider = ({children}) => {
   // State for managing the todos
   const [todos, setTodos] = useState<TodoType[]>([]);
+  const [currentTodo, setCurrentTodo] = useState<TodoType | null>(null);
   const [loading, setLoading] = useState<boolean>(true); // Initial loading state
 
   // Load todos from local storage on initial render
@@ -52,6 +53,7 @@ export const TodoProvider = ({children}) => {
     setTodos(
       todos.map((todo: TodoType) => (todo.id === id ? {...todo, text: updatedText} : todo))
     );
+    setCurrentTodo(null)
   };
 
   const toggleTodo = useCallback((id: number) => {
@@ -68,7 +70,9 @@ export const TodoProvider = ({children}) => {
     removeTodo,
     editTodo,
     toggleTodo,
-    loading
+    loading,
+    currentTodo,
+    setCurrentTodo
   };
 
   return (
