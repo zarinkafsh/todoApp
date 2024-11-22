@@ -7,20 +7,20 @@ import {
   Checkbox,
   ListItemIcon,
   ListItemText,
-  CircularProgress,
   Typography
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import ClearIcon from "@mui/icons-material/Clear";
-import {useTodo} from "@/contexts/TodoContext";
-import {TodoType} from "@/types/todo";
+import {useTodo} from "@/app/contexts/TodoContext";
+import {TodoType} from "@/app/types/todo";
+import {Empty, Skeleton} from "@/app/components";
 
 export const TodoList = () => {
   const {todos, toggleTodo, removeTodo, loading, setCurrentTodo} = useTodo();
 
-  if (loading) return <CircularProgress size={30} className="flex justify-center items-center"/>;
+  if (loading) return <Skeleton/>;
 
-  if (todos.length === 0) return <Typography className="flex justify-center items-center">No todos found!</Typography>;
+  if (todos.length === 0) return <Empty description="No todos found!"/>;
 
   return (
     <List>
