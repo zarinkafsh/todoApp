@@ -13,7 +13,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import ClearIcon from "@mui/icons-material/Clear";
 import {useTodo} from "@/contexts/TodoContext";
-import {TodoType} from "@/common/todo";
+import {TodoType} from "@/types/todo";
 
 export const TodoList = () => {
   const {todos, toggleTodo, removeTodo, loading, setCurrentTodo} = useTodo();
