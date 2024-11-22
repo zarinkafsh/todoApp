@@ -65,7 +65,6 @@ export const TodoCreate = () => {
             color="primary"
             size="small"
             type="submit"
-            variant="contained"
             aria-label={currentTodo ? "Edit Todo" : "Add Todo"}
             disabled={!todoText.trim()}
           >
