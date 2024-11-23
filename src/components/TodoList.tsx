@@ -1,3 +1,4 @@
+import { ChangeEvent } from "react";
 import {
   IconButton,
   List,
@@ -11,16 +12,16 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import ClearIcon from "@mui/icons-material/Clear";
-import {useTodo} from "@/app/contexts/TodoContext";
-import {TodoType} from "@/app/types/todo";
-import {Empty, Skeleton} from "@/app/components";
+import { TodoType } from "@/types/todo";
+import { useTodo } from "@/todoProvider/todoProvider";
+import { Empty, Skeleton } from "@/components";
 
 export const TodoList = () => {
-  const {todos, toggleTodo, removeTodo, loading, setCurrentTodo} = useTodo();
+  const { todos, toggleTodo, removeTodo, loading, setCurrentTodo, currentTodo } = useTodo();
 
-  if (loading) return <Skeleton/>;
+  if (loading) return <Skeleton />;
 
-  if (todos.length === 0) return <Empty description="No todos found!"/>;
+  if (todos.length === 0) return <Empty description="No todos found!" />;
 
   return (
     <List>
@@ -35,19 +36,26 @@ export const TodoList = () => {
                 edge="start"
                 title="Edit"
                 aria-label="edit"
-                onClick={() => setCurrentTodo(todo)}
-                disabled={todo.completed}
+                disabled={currentTodo || todo.completed}
+                onClick={(e: ChangeEvent<HTMLInputElement>) => {
+                  e.stopPropagation()
+                  setCurrentTodo(todo)
+                }}
               >
-                <EditIcon fontSize="small"/>
+                <EditIcon fontSize="small" />
               </IconButton>
               <IconButton
                 color="error"
                 edge="end"
                 title="Delete"
                 aria-label="delete"
-                onClick={() => removeTodo(todo.id)}
+                disabled={currentTodo}
+                onClick={(e: ChangeEvent<HTMLInputElement>) => {
+                  e.stopPropagation()
+                  removeTodo(todo.id)
+                }}
               >
-                <ClearIcon fontSize="small"/>
+                <ClearIcon fontSize="small" />
               </IconButton>
             </Stack>
           }
@@ -55,7 +63,10 @@ export const TodoList = () => {
           <ListItemButton
             disableTouchRipple
             disableRipple
-            onClick={() => toggleTodo(todo.id)}
+            onClick={(e: ChangeEvent<HTMLInputElement>) => {
+              e.stopPropagation()
+              toggleTodo(todo.id)
+            }}
           >
             <ListItemIcon>
               <Checkbox

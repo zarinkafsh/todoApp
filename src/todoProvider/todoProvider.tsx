@@ -1,11 +1,10 @@
 'use client';
 
 import {createContext, useState, useContext, useCallback, useEffect, ReactNode, FC} from 'react';
-import {TodoContextType, TodoType} from '@/app/types/todo';
+import {TodoContextType, TodoType} from '@/types/todo';
 
 const TodoContext = createContext<TodoContextType | null>(null);
 
-// Custom hook to use the TodoContext
 export const useTodo = () => {
   const context = useContext(TodoContext);
   if (!context) {
@@ -19,12 +18,10 @@ interface ContextProps {
 }
 
 export const TodoProvider: FC<ContextProps> = ({children}) => {
-  // State for managing the todos
   const [todos, setTodos] = useState<TodoType[]>([]);
   const [currentTodo, setCurrentTodo] = useState<TodoType | null>(null);
-  const [loading, setLoading] = useState<boolean>(true); // Initial loading state
+  const [loading, setLoading] = useState<boolean>(true);
 
-  // Load todos from local storage on initial render
   useEffect(() => {
     const loadTodos = () => {
       setLoading(true);
@@ -32,18 +29,17 @@ export const TodoProvider: FC<ContextProps> = ({children}) => {
       if (savedTodos) {
         setTodos(JSON.parse(savedTodos));
       }
-      setLoading(false); // Set loading to false after data is loaded
+      setLoading(false); 
     };
     loadTodos();
   }, []);
 
-  // Save todos to local storage whenever the todos state changes
   useEffect(() => {
     localStorage.setItem('todos', JSON.stringify(todos));
   }, [todos]);
 
   const addTodo = useCallback((text: string) => {
-    setTodos((prevTodos) => [
+    setTodos((prevTodos: TodoType[]) => [
       ...prevTodos,
       {id: Date.now(), text: text.trim(), completed: false}
     ]);
@@ -61,7 +57,7 @@ export const TodoProvider: FC<ContextProps> = ({children}) => {
   };
 
   const toggleTodo = useCallback((id: number) => {
-    setTodos((prevTodos) =>
+    setTodos((prevTodos:TodoType[]) => 
       prevTodos.map((todo) =>
         todo.id === id ? {...todo, completed: !todo.completed} : todo
       )

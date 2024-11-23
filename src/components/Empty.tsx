@@ -8,9 +8,9 @@ type EmptyProps = ComponentPropsWithoutRef<typeof Box> & {
 
 export const Empty = ({ description }: EmptyProps) => {
   return (
-    <Box>
-      <InboxIcon fontSize="large" />
-      <Typography variant="body1" align="center">{description}</Typography>
+    <Box sx={{}} alignContent="center" textAlign="center">
+      <InboxIcon fontSize="large" color="action"/>
+      <Typography variant="body1" color="textSecondary" align="center">{description}</Typography>
     </Box>
   )
 }
