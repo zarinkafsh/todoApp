@@ -1,7 +1,7 @@
 'use client';
 
-import {createContext, useState, useContext, useCallback, useEffect, ReactNode, FC} from 'react';
-import {TodoContextType, TodoType} from '@/types/todo';
+import {createContext, useState, useContext, useCallback, useEffect, ReactNode, FC, useReducer} from 'react';
+import {ActionType, TodoContextType, TodoType} from '@/types/todo';
 
 const TodoContext = createContext<TodoContextType | null>(null);
 
@@ -13,13 +13,43 @@ export const useTodo = () => {
   return context;
 };
 
+const taskReducer = (state: Record<string, TodoType>, action: ActionType) => {
+  switch (action.type) {
+    case 'INIT':
+      return action.payload;
+    case 'ADD':
+      return {
+        ...state,
+        [action.payload?.id]: action.payload,
+      };
+    case 'REMOVE':
+      const otherTodos = {
+        ...state,
+      };
+
+      delete otherTodos[action.payload?.id];
+
+      return otherTodos;
+    case 'EDIT':
+      return {
+        ...state,
+        [action.payload?.id]: {
+          ...state[action.payload?.id],
+          ...action.payload,
+        },
+      }
+    default:
+      return state;
+  }
+}
+
 interface ContextProps {
   children: ReactNode;
 }
 
 export const TodoProvider: FC<ContextProps> = ({children}) => {
-  const [todos, setTodos] = useState<TodoType[]>([]);
-  const [currentTodo, setCurrentTodo] = useState<TodoType | null>(null);
+  const [todos, dispatch] = useReducer(taskReducer, {});
+
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -27,9 +57,12 @@ export const TodoProvider: FC<ContextProps> = ({children}) => {
       setLoading(true);
       const savedTodos = localStorage.getItem('todos');
       if (savedTodos) {
-        setTodos(JSON.parse(savedTodos));
+        dispatch({
+          type: 'INIT',
+          payload: JSON.parse(savedTodos),
+        });
       }
-      setLoading(false); 
+      setLoading(false);
     };
     loadTodos();
   }, []);
@@ -39,29 +72,43 @@ export const TodoProvider: FC<ContextProps> = ({children}) => {
   }, [todos]);
 
   const addTodo = useCallback((text: string) => {
-    setTodos((prevTodos: TodoType[]) => [
-      ...prevTodos,
-      {id: Date.now(), text: text.trim(), completed: false}
-    ]);
+    dispatch({
+      type: 'ADD',
+      payload: {
+        id: Date.now(),
+        completed: false,
+        text,
+      }
+    });
   }, []);
 
-  const removeTodo = (id: number) => {
-    setTodos(todos.filter((todo: TodoType) => todo.id !== id));
-  };
+  const removeTodo = useCallback((id) => {
+    dispatch({
+      type: 'REMOVE',
+      payload: {
+        id,
+      }
+    })
+  }, []);
 
-  const editTodo = (id: number, updatedText: string) => {
-    setTodos(
-      todos.map((todo: TodoType) => (todo.id === id ? {...todo, text: updatedText} : todo))
-    );
-    setCurrentTodo(null)
-  };
+  const editTodo = useCallback((id: number, text: string) => {
+    dispatch({
+      type: 'EDIT',
+      payload: {
+        id,
+        text,
+      }
+    });
+  }, []);
 
-  const toggleTodo = useCallback((id: number) => {
-    setTodos((prevTodos:TodoType[]) => 
-      prevTodos.map((todo) =>
-        todo.id === id ? {...todo, completed: !todo.completed} : todo
-      )
-    );
+  const toggleTodo = useCallback((id, completed) => {
+    dispatch({
+      type: 'EDIT',
+      payload: {
+        id,
+        completed,
+      }
+    });
   }, []);
 
   const contextValue = {
@@ -70,9 +117,7 @@ export const TodoProvider: FC<ContextProps> = ({children}) => {
     removeTodo,
     editTodo,
     toggleTodo,
-    loading,
-    currentTodo,
-    setCurrentTodo
+    loading
   };
 
   return (
