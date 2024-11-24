@@ -1,4 +1,4 @@
-import {ChangeEvent, FC} from "react";
+import {FC} from "react";
 import {
   IconButton,
   List,
@@ -42,10 +42,7 @@ export const TodoList: FC<TodoListProps> = ({onEdit, currentTodo}) => {
                 title="Edit"
                 aria-label="edit"
                 disabled={todo.completed || !!currentTodo}
-                onClick={(e: ChangeEvent<HTMLInputElement>) => {
-                  e.stopPropagation()
-                  onEdit(todo);
-                }}
+                onClick={() => onEdit(todo)}
               >
                 <EditIcon fontSize="small"/>
               </IconButton>
@@ -55,10 +52,7 @@ export const TodoList: FC<TodoListProps> = ({onEdit, currentTodo}) => {
                 title="Delete"
                 aria-label="delete"
                 disabled={!!currentTodo}
-                onClick={(e: ChangeEvent<HTMLInputElement>) => {
-                  e.stopPropagation()
-                  removeTodo(todo.id)
-                }}
+                onClick={() => removeTodo(todo.id)}
               >
                 <ClearIcon fontSize="small"/>
               </IconButton>
@@ -68,10 +62,7 @@ export const TodoList: FC<TodoListProps> = ({onEdit, currentTodo}) => {
           <ListItemButton
             disableTouchRipple
             disableRipple
-            onClick={(e: ChangeEvent<HTMLInputElement>) => {
-              e.stopPropagation()
-              toggleTodo(todo.id, !todo.completed)
-            }}
+            onClick={() => toggleTodo(todo.id, !todo.completed)}
           >
             <ListItemIcon>
               <Checkbox
