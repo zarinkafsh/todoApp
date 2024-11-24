@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import {ChangeEvent, FC} from "react";
 import {
   IconButton,
   List,
@@ -12,20 +12,25 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import ClearIcon from "@mui/icons-material/Clear";
-import { TodoType } from "@/types/todo";
-import { useTodo } from "@/todoProvider/todoProvider";
-import { Empty, Skeleton } from "@/components";
+import {TodoType} from "@/types/todo";
+import {useTodo} from "@/todoProvider/todoProvider";
+import {Empty, Skeleton} from "@/components";
 
-export const TodoList = () => {
-  const { todos, toggleTodo, removeTodo, loading, setCurrentTodo, currentTodo } = useTodo();
+interface TodoListProps {
+  onEdit: (todo: TodoType) => void;
+  currentTodo?: TodoType;
+}
 
-  if (loading) return <Skeleton />;
+export const TodoList: FC<TodoListProps> = ({onEdit, currentTodo}) => {
+  const {todos, toggleTodo, removeTodo, loading} = useTodo();
 
-  if (todos.length === 0) return <Empty description="No todos found!" />;
+  if (loading) return <Skeleton/>;
+
+  if (!Object.keys(todos).length) return <Empty description="No todos found!"/>;
 
   return (
     <List>
-      {(todos || []).map((todo: TodoType) => (
+      {(Object.values(todos) || []).map((todo: TodoType) => (
         <ListItem
           dense
           key={todo.id}
@@ -36,26 +41,26 @@ export const TodoList = () => {
                 edge="start"
                 title="Edit"
                 aria-label="edit"
-                disabled={currentTodo || todo.completed}
+                disabled={todo.completed || !!currentTodo}
                 onClick={(e: ChangeEvent<HTMLInputElement>) => {
                   e.stopPropagation()
-                  setCurrentTodo(todo)
+                  onEdit(todo);
                 }}
               >
-                <EditIcon fontSize="small" />
+                <EditIcon fontSize="small"/>
               </IconButton>
               <IconButton
                 color="error"
                 edge="end"
                 title="Delete"
                 aria-label="delete"
-                disabled={currentTodo}
+                disabled={!!currentTodo}
                 onClick={(e: ChangeEvent<HTMLInputElement>) => {
                   e.stopPropagation()
                   removeTodo(todo.id)
                 }}
               >
-                <ClearIcon fontSize="small" />
+                <ClearIcon fontSize="small"/>
               </IconButton>
             </Stack>
           }
@@ -65,7 +70,7 @@ export const TodoList = () => {
             disableRipple
             onClick={(e: ChangeEvent<HTMLInputElement>) => {
               e.stopPropagation()
-              toggleTodo(todo.id)
+              toggleTodo(todo.id, !todo.completed)
             }}
           >
             <ListItemIcon>

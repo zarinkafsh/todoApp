@@ -1,14 +1,18 @@
 "use client";
 
+import {useState} from "react";
 import {
   Box,
   Card,
   Container,
   Typography,
 } from "@mui/material";
-import { TodoCreate, TodoList } from "@/components";
+import {TodoCreate, TodoList} from "@/components";
+import {TodoType} from "@/types/todo";
 
 export default function Home() {
+  const [currentTodo, setCurrentTodo] = useState<TodoType | undefined>(undefined);
+
   return (
     <Container maxWidth="md">
       <Card sx={{
@@ -18,9 +22,9 @@ export default function Home() {
           Todo List
         </Typography>
         <Box>
-          <TodoCreate />
+          <TodoCreate currentTodo={currentTodo} onEdit={() => setCurrentTodo(undefined)}/>
         </Box>
-        <TodoList />
+        <TodoList onEdit={setCurrentTodo} currentTodo={currentTodo}/>
       </Card>
     </Container>
   );

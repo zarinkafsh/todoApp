@@ -1,44 +1,45 @@
 'use client';
 
-import { FormEvent, useEffect, useState, useCallback, ChangeEvent } from "react";
-import { Box, FormControl, IconButton, Input, Stack } from "@mui/material";
+import {FormEvent, useEffect, useState, useCallback, ChangeEvent, FC} from "react";
+import {Box, FormControl, IconButton, Input, Stack} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
-import { useTodo } from "@/todoProvider/todoProvider";
+import {useTodo} from "@/todoProvider/todoProvider";
+import {TodoType} from "@/types/todo";
 
-export const TodoCreate = () => {
+interface TodoCreateProps {
+  currentTodo?: TodoType;
+  onEdit: () => void;
+}
+
+export const TodoCreate: FC<TodoCreateProps> = ({currentTodo, onEdit}) => {
   const [todoText, setTodoText] = useState("");
-  const { addTodo, editTodo, currentTodo } = useTodo();
+  const {addTodo, editTodo} = useTodo();
 
   useEffect(() => {
-    if (currentTodo) {
-      setTodoText(currentTodo.text);
-    } else {
-      setTodoText("");
-    }
+    setTodoText(currentTodo?.text || "")
   }, [currentTodo]);
-
 
   const handleInputChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setTodoText(e.target.value);
   }, []);
 
+  const handleSubmit = useCallback((e: FormEvent) => {
+    e.preventDefault();
 
-  const handleSubmit = useCallback(
-    (e: FormEvent) => {
-      e.preventDefault();
-      const trimmedText = todoText.trim();
-      if (trimmedText) {
-        if (currentTodo) {
-          editTodo(currentTodo.id, trimmedText);
-        } else {
-          addTodo(trimmedText);
-        }
-        setTodoText("");
+    const trimmedText = todoText.trim();
+
+    if (trimmedText) {
+      if (currentTodo) {
+        editTodo(currentTodo.id, trimmedText);
+        onEdit();
+      } else {
+        addTodo(trimmedText);
       }
-    },
-    [todoText, currentTodo, addTodo, editTodo]
-  );
+
+      setTodoText("");
+    }
+  }, [todoText, currentTodo, addTodo, editTodo]);
 
   return (
     <Box
@@ -48,7 +49,7 @@ export const TodoCreate = () => {
       <Stack direction="row" spacing={2}>
         <FormControl
           fullWidth
-          sx={{ gap: 0.5 }}
+          sx={{gap: 0.5}}
         >
           <Input
             autoFocus
@@ -69,8 +70,8 @@ export const TodoCreate = () => {
           >
             {
               currentTodo
-                ? <EditIcon fontSize="small" />
-                : <AddIcon />
+                ? <EditIcon fontSize="small"/>
+                : <AddIcon/>
             }
           </IconButton>
         </FormControl>
