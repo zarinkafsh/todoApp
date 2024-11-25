@@ -14,7 +14,6 @@ export const useTodo = () => {
 };
 
 const taskReducer = (state: Record<string, TodoType>, action: ActionType) => {
-  console.log(action)
   switch (action.type) {
     case 'INIT':
       return action.payload;
