@@ -14,6 +14,7 @@ export const useTodo = () => {
 };
 
 const taskReducer = (state: Record<string, TodoType>, action: ActionType) => {
+  console.log(action)
   switch (action.type) {
     case 'INIT':
       return action.payload;
@@ -82,7 +83,7 @@ export const TodoProvider: FC<ContextProps> = ({children}) => {
     });
   }, []);
 
-  const removeTodo = useCallback((id) => {
+  const removeTodo = useCallback((id:number) => {
     dispatch({
       type: 'REMOVE',
       payload: {
@@ -101,7 +102,7 @@ export const TodoProvider: FC<ContextProps> = ({children}) => {
     });
   }, []);
 
-  const toggleTodo = useCallback((id, completed) => {
+  const toggleTodo = useCallback((id: number, completed: boolean) => {
     dispatch({
       type: 'EDIT',
       payload: {
